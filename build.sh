@@ -10,6 +10,8 @@ out_dir="out"
 out_name="$project_name"
 linker_flags=""
 
+windows_user="ngkil"
+
 windows_flag=false
 release_flag=false
 clean_flag=false
@@ -44,7 +46,7 @@ fi
 
 # check if parameter one exist and is equal to "windows"
 if [ "$windows_flag" == "true" ]; then
-	windows_out_dir="/mnt/c/Users/ngkil/Desktop/$project_name"
+	windows_out_dir="/mnt/c/Users/$windows_user/Desktop/$project_name"
 	if [ ! -d "$windows_out_dir" ]; then
 		mkdir $windows_out_dir
 	fi
