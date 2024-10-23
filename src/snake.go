@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"strings"
+
 	log "github.com/NikosGour/logging/src"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -40,13 +43,14 @@ func newSnake(game_ctx *Game) *Snake {
 }
 
 func (this *Snake) draw() {
-	for _, body_part := range this.body {
+	for i := range this.body {
+		body_part := &this.body[i]
 		color := rl.Black
-		log.Debug("body_part: %p, tail: %p, head: %p", &body_part, this.tail, this.head)
-		if &body_part == this.tail {
+		// log.Debug("body_part: %p, tail: %p, head: %p", body_part, this.tail, this.head)
+		if body_part == this.tail {
 			color.R += 0xFF
 		}
-		if &body_part == this.head {
+		if body_part == this.head {
 			color.B += 0xFF
 		}
 
@@ -72,6 +76,27 @@ func (this *Snake) setHead() {
 }
 
 func (this *Snake) print() {
-	log.Debug("Snake: %+v", this)
-	log.Debug("Body: %p", this.body)
+	for i := range this.body {
+		body_part := &this.body[i]
+		log.Debug("Part %d: %p", i, body_part)
+	}
+	log.Debug("Head: %p", this.head)
+	log.Debug("Tail: %p", this.tail)
+	var str strings.Builder
+
+	str.WriteString("snake: {\n")
+	indent := strings.Repeat("\t", 6)
+	for _, body_part := range this.body {
+		coords := fmt.Sprintf(indent+"x: %d, y: %d\n", int(body_part.X), int(body_part.Y))
+		str.WriteString(coords)
+	}
+	head := fmt.Sprintf(indent+"head: {x: %d, y: %d}\n", int(this.head.X), int(this.head.Y))
+	str.WriteString(head)
+
+	tail := fmt.Sprintf(indent+"tail: {x: %d, y: %d}\n", int(this.tail.X), int(this.tail.Y))
+	str.WriteString(tail)
+	str.WriteString(indent + "}")
+
+	log.Debug("%s", str.String())
+
 }
