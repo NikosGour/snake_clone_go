@@ -46,12 +46,12 @@ func (this *Game) runGameLoop() {
 
 	for !rl.WindowShouldClose() {
 		this.configureMonitorScreenSizes()
-		// log.Debug("monitor: %v, monitor_height: %v, monitor_width: %v", this.current_monitor, this.monitor_height, this.monitor_width)
-		// log.Debug("screen_height: %v, screen_width: %v", this.screen_height, this.screen_width)
+		log.Debug("monitor: %v, monitor_height: %v, monitor_width: %v", this.current_monitor, this.monitor_height, this.monitor_width)
+		log.Debug("screen_height: %v, screen_width: %v", this.screen_height, this.screen_width)
 
-		if this.screen_height > 600 && this.screen_width > 800 {
+		if this.screen_height > 600 && this.screen_width > 800 && this.grid == nil {
 			this.init()
-		} else if this.monitor_height == 600 || this.screen_width == 800 {
+		} else if (this.monitor_height == 600 || this.monitor_width == 800) && this.grid == nil {
 			this.init()
 		}
 
