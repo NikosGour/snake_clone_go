@@ -44,7 +44,7 @@ done
 if [ "$release_flag" == "true" ]; then
 	out_name="$out_name-release"
 	linker_flags="$linker_flags -s -w"
-	tags=""
+	tags="-tags= "
 	if [ "$windows_flag" == "true" ]; then
 		linker_flags="$linker_flags -H windowsgui"
 	fi
