@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os"
+	"time"
+
 	log "github.com/NikosGour/logging/src"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -15,6 +18,8 @@ type Game struct {
 	grid  *Grid
 	snake *Snake
 	fruit *Fruit
+
+	event_ticker *time.Ticker
 }
 
 func newGame() Game {
@@ -38,6 +43,7 @@ func (this *Game) init() {
 	this.grid = newGrid(this)
 	this.snake = newSnake(this)
 	this.fruit = newFruit(this)
+	this.event_ticker = time.NewTicker(1 * time.Second)
 
 }
 
@@ -46,8 +52,17 @@ func (this *Game) runGameLoop() {
 
 	for !rl.WindowShouldClose() {
 		this.configureMonitorScreenSizes()
-		log.Debug("monitor: %v, monitor_height: %v, monitor_width: %v", this.current_monitor, this.monitor_height, this.monitor_width)
-		log.Debug("screen_height: %v, screen_width: %v", this.screen_height, this.screen_width)
+		// log.Debug("monitor: %v, monitor_height: %v, monitor_width: %v", this.current_monitor, this.monitor_height, this.monitor_width)
+		// log.Debug("screen_height: %v, screen_width: %v", this.screen_height, this.screen_width)
+
+		// Triggering events
+		if this.grid != nil {
+			select {
+			case <-this.event_ticker.C:
+				this.update()
+			default:
+			}
+		}
 
 		if this.screen_height > 600 && this.screen_width > 800 && this.grid == nil {
 			this.init()
@@ -60,13 +75,21 @@ func (this *Game) runGameLoop() {
 		if this.grid != nil {
 			this.grid.draw()
 			this.snake.draw()
-			this.snake.print()
 			this.fruit.draw()
 		}
 
 		rl.ClearBackground(rl.NewColor(0x18, 0x18, 0x18, 0xFF))
 		// ---------------- END DRAWING ------------------------
 		rl.EndDrawing()
+	}
+}
+
+func (this *Game) update() {
+	this.snake.print()
+	err := this.snake.move()
+	if err != nil {
+		log.Error("Went out of bounds: %s", err)
+		os.Exit(1)
 	}
 }
 

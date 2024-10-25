@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	log "github.com/NikosGour/logging/src"
@@ -99,4 +101,50 @@ func (this *Snake) print() {
 
 	log.Debug("%s", str.String())
 
+}
+
+var (
+	ErrorOutOfBoundsNorth = errors.New("OutOfBoundsNorth")
+	ErrorOutOfBoundsSouth = errors.New("OutOfBoundsSouth")
+	ErrorOutOfBoundsWest  = errors.New("OutOfBoundsWest")
+	ErrorOutOfBoundsEast  = errors.New("OutOfBoundsEast")
+)
+
+func (this *Snake) move() error {
+	this.setHead()
+	switch this.direction {
+	case Direction_UP:
+		if this.head.Y == 0 {
+			return ErrorOutOfBoundsNorth
+		}
+	case Direction_DOWN:
+		if this.head.Y == Grid_rows-1 {
+			return ErrorOutOfBoundsSouth
+		}
+	case Direction_LEFT:
+		if this.head.X == 0 {
+			return ErrorOutOfBoundsWest
+		}
+	case Direction_RIGHT:
+		if this.head.X == Grid_columns-1 {
+			return ErrorOutOfBoundsEast
+		}
+	}
+	var move_v rl.Vector2
+	switch this.direction {
+	case Direction_UP:
+		move_v = rl.NewVector2(this.head.X, this.head.Y-1)
+	case Direction_DOWN:
+		move_v = rl.NewVector2(this.head.X, this.head.Y+1)
+	case Direction_LEFT:
+		move_v = rl.NewVector2(this.head.X-1, this.head.Y)
+	case Direction_RIGHT:
+		move_v = rl.NewVector2(this.head.X+1, this.head.Y)
+	}
+
+	this.addBodyPart(int(move_v.X), int(move_v.Y))
+	this.body = slices.Delete(this.body, 0, 1)
+	this.setHead()
+	this.setTail()
+	return nil
 }
