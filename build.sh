@@ -1,7 +1,7 @@
 #!/bin/env bash
 
 usage() {
-	printf "Usage: $0 [windows][release][clean] \n\twindows: build for windows, leave empty for building for linux\n\trelease: build with release flags\n\tclean: clean the output directory\n"
+	printf "Usage: $0 [windows][run][release][clean] \n\n\twindows:  build for windows, leave empty for building for linux\n\trun:      run the built file after building\n\trelease:  build with release flags\n\tclean:    clean the output directory\n"
 	exit 1
 }
 
@@ -9,12 +9,14 @@ project_name="snake_clone"
 out_dir="out"
 out_name="$project_name"
 linker_flags=""
+tags="-tags=debug"
 
 windows_user="ngkil"
 
 windows_flag=false
 release_flag=false
 clean_flag=false
+run_flag=false
 
 # get parameters and set the flags
 
@@ -29,6 +31,9 @@ while [ "$1" != "" ]; do
 	clean)
 		clean_flag=true
 		;;
+	run)
+		run_flag=true
+		;;
 	*)
 		usage
 		;;
@@ -39,6 +44,7 @@ done
 if [ "$release_flag" == "true" ]; then
 	out_name="$out_name-release"
 	linker_flags="$linker_flags -s -w"
+	tags=""
 	if [ "$windows_flag" == "true" ]; then
 		linker_flags="$linker_flags -H windowsgui"
 	fi
@@ -46,6 +52,11 @@ fi
 
 # check if parameter one exist and is equal to "windows"
 if [ "$windows_flag" == "true" ]; then
+	if [ "$run_flag" == "true" ]; then
+		echo "run flag is not supported for windows"
+		run_flag=false
+	fi
+
 	windows_out_dir="/mnt/c/Users/$windows_user/Desktop/$project_name"
 	if [ ! -d "$windows_out_dir" ]; then
 		mkdir $windows_out_dir
@@ -71,11 +82,17 @@ else
 		echo "Cleaning previous file"
 		rm $out_dir/$out_name 2>/dev/null
 	fi
-
+	echo "tags: $tags"
 	echo "Building for linux"
 	set -x
-	go build -ldflags "$linker_flags" -o $out_dir/$out_name ./src
+	go list -f '{{.GoFiles}}' $tags ./src ./src/build
+
+	go build -ldflags "$linker_flags" -o $out_dir/$out_name $tags ./src
 	set +x
 fi
 
 printf "Done Building\n---------------------------------\n\n\n"
+
+if [ "$run_flag" == "true" ]; then
+	./$out_dir/$out_name
+fi

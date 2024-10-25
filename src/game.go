@@ -20,9 +20,11 @@ type Game struct {
 	fruit *Fruit
 
 	event_ticker *time.Ticker
+
+	debug_mode bool
 }
 
-func newGame() Game {
+func newGame(debug bool) Game {
 
 	rl.SetConfigFlags(rl.FlagWindowResizable)
 	rl.InitWindow(800, 600, "Snake Clone by Nikos Gournakis")
@@ -33,7 +35,7 @@ func newGame() Game {
 		rl.MaximizeWindow()
 	}
 
-	this := Game{}
+	this := Game{debug_mode: debug}
 	log.Debug("%#v", this)
 
 	return this
