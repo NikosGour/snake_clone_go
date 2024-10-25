@@ -43,7 +43,7 @@ func (this *Game) init() {
 	this.grid = newGrid(this)
 	this.snake = newSnake(this)
 	this.fruit = newFruit(this)
-	this.event_ticker = time.NewTicker(1 * time.Second)
+	this.event_ticker = time.NewTicker(time.Second / 2)
 
 }
 

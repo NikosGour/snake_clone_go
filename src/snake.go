@@ -21,18 +21,10 @@ type Snake struct {
 	direction Direction
 }
 
-type Direction uint8
-
-const (
-	Direction_UP Direction = iota
-	Direction_RIGHT
-	Direction_DOWN
-	Direction_LEFT
-)
-
 func newSnake(game_ctx *Game) *Snake {
 	this := Snake{color: rl.Green, direction: Direction_RIGHT}
 	this.game_ctx = game_ctx
+	fmt.Println(this.direction)
 
 	this.body = make([]rl.Vector2, 0, Grid_columns*Grid_rows)
 	this.addBodyPart(0, 0)
@@ -104,10 +96,11 @@ func (this *Snake) print() {
 }
 
 var (
-	ErrorOutOfBoundsNorth = errors.New("OutOfBoundsNorth")
-	ErrorOutOfBoundsSouth = errors.New("OutOfBoundsSouth")
-	ErrorOutOfBoundsWest  = errors.New("OutOfBoundsWest")
-	ErrorOutOfBoundsEast  = errors.New("OutOfBoundsEast")
+	ErrorOutOfBoundsUp    = errors.New("OutOfBoundsUp")
+	ErrorOutOfBoundsDown  = errors.New("OutOfBoundsDown")
+	ErrorOutOfBoundsLeft  = errors.New("OutOfBoundsLeft")
+	ErrorOutOfBoundsRight = errors.New("OutOfBoundsRight")
+	ErrorHitBody          = errors.New("HitBody")
 )
 
 func (this *Snake) move() error {
@@ -115,22 +108,23 @@ func (this *Snake) move() error {
 	switch this.direction {
 	case Direction_UP:
 		if this.head.Y == 0 {
-			return ErrorOutOfBoundsNorth
+			return fmt.Errorf("%s at {x: %d, y: %d}", ErrorOutOfBoundsUp, int(this.head.X), int(this.head.Y))
 		}
 	case Direction_DOWN:
 		if this.head.Y == Grid_rows-1 {
-			return ErrorOutOfBoundsSouth
+			return fmt.Errorf("%s at {x: %d, y: %d}", ErrorOutOfBoundsDown, int(this.head.X), int(this.head.Y))
 		}
 	case Direction_LEFT:
 		if this.head.X == 0 {
-			return ErrorOutOfBoundsWest
+			return fmt.Errorf("%s at {x: %d, y: %d}", ErrorOutOfBoundsLeft, int(this.head.X), int(this.head.Y))
 		}
 	case Direction_RIGHT:
 		if this.head.X == Grid_columns-1 {
-			return ErrorOutOfBoundsEast
+			return fmt.Errorf("%s at {x: %d, y: %d}", ErrorOutOfBoundsRight, int(this.head.X), int(this.head.Y))
 		}
 	}
 	var move_v rl.Vector2
+
 	switch this.direction {
 	case Direction_UP:
 		move_v = rl.NewVector2(this.head.X, this.head.Y-1)
@@ -140,6 +134,16 @@ func (this *Snake) move() error {
 		move_v = rl.NewVector2(this.head.X-1, this.head.Y)
 	case Direction_RIGHT:
 		move_v = rl.NewVector2(this.head.X+1, this.head.Y)
+	}
+	if slices.Contains(this.body, move_v) {
+		return fmt.Errorf("%s going %d head at {x: %d, y: %d}, body segment at {x: %d, y: %d}",
+			ErrorHitBody,
+			this.direction,
+			int(this.head.X),
+			int(this.head.Y),
+			int(move_v.X),
+			int(move_v.Y),
+		)
 	}
 
 	this.addBodyPart(int(move_v.X), int(move_v.Y))
