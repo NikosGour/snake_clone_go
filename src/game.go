@@ -45,7 +45,7 @@ func (this *Game) init() {
 	this.grid = newGrid(this)
 	this.snake = newSnake(this)
 	this.fruit = newFruit(this)
-	this.event_ticker = time.NewTicker(time.Second / 2)
+	this.event_ticker = time.NewTicker(time.Second / 3)
 
 }
 
@@ -59,6 +59,17 @@ func (this *Game) runGameLoop() {
 
 		// Triggering events
 		if this.grid != nil {
+			if rl.IsKeyPressed(rl.KeyW) && this.snake.direction != Direction_DOWN {
+				this.snake.direction = Direction_UP
+			} else if rl.IsKeyPressed(rl.KeyS) && this.snake.direction != Direction_UP {
+				this.snake.direction = Direction_DOWN
+			} else if rl.IsKeyPressed(rl.KeyD) && this.snake.direction != Direction_LEFT {
+				this.snake.direction = Direction_RIGHT
+			} else if rl.IsKeyPressed(rl.KeyA) && this.snake.direction != Direction_RIGHT {
+				this.snake.direction = Direction_LEFT
+			}
+
+			// Update state
 			select {
 			case <-this.event_ticker.C:
 				this.update()
