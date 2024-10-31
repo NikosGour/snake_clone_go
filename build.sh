@@ -68,9 +68,11 @@ if [ "$windows_flag" == "true" ]; then
 		rm $out_dir/$out_name 2>/dev/null
 	fi
 
+	echo "tags: $tags"
 	echo "Building for windows"
 	set -x
-	CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -ldflags "$linker_flags" -o $out_dir/$out_name ./src
+	go list -f '{{.GoFiles}}' $tags ./src ./src/build
+	CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -ldflags "$linker_flags" -o $out_dir/$out_name $tags ./src
 	mv $out_dir/$out_name $windows_out_dir
 	if [ "$release_flag" == "false" ]; then
 		printf "$out_name\npause\n" >$windows_out_dir/debug_run.bat
