@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	Grid_columns = 15
-	Grid_rows    = 8
+	Grid_columns = 60
+	Grid_rows    = 32
 )
 
 type Grid struct {
@@ -21,7 +21,7 @@ type Grid struct {
 }
 
 func newGrid(game_ctx *Game) *Grid {
-	this := Grid{cell_width: 80, cell_padding: 10, cell_color: rl.NewColor(0x33, 0x33, 0x33, 0xFF)}
+	this := Grid{cell_width: 20, cell_padding: 5, cell_color: rl.NewColor(0x33, 0x33, 0x33, 0xFF)}
 
 	this.game_ctx = game_ctx
 	this.cell_size = rl.NewVector2(float32(this.cell_width), float32(this.cell_width))

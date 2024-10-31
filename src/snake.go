@@ -41,11 +41,13 @@ func (this *Snake) draw() {
 		body_part := &this.body[i]
 		color := rl.Black
 		// log.Debug("body_part: %p, tail: %p, head: %p", body_part, this.tail, this.head)
-		if body_part == this.tail {
-			color.R += 0xFF
-		}
-		if body_part == this.head {
-			color.B += 0xFF
+		if this.game_ctx.debug_mode {
+			if body_part == this.tail {
+				color.R += 0xFF
+			}
+			if body_part == this.head {
+				color.B += 0xFF
+			}
 		}
 
 		if color == rl.Black {

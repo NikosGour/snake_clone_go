@@ -24,7 +24,7 @@ type Game struct {
 	debug_mode bool
 }
 
-func newGame(debug bool) Game {
+func newGame(debug bool) *Game {
 
 	rl.SetConfigFlags(rl.FlagWindowResizable)
 	rl.InitWindow(800, 600, "Snake Clone by Nikos Gournakis")
@@ -35,7 +35,7 @@ func newGame(debug bool) Game {
 		rl.MaximizeWindow()
 	}
 
-	this := Game{debug_mode: debug}
+	this := &Game{debug_mode: debug}
 	log.Debug("%#v", this)
 
 	return this
@@ -45,7 +45,7 @@ func (this *Game) init() {
 	this.grid = newGrid(this)
 	this.snake = newSnake(this)
 	this.fruit = newFruit(this)
-	this.event_ticker = time.NewTicker(time.Second / 3)
+	this.event_ticker = time.NewTicker(time.Second / 5)
 
 }
 
